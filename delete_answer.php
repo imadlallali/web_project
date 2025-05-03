@@ -24,7 +24,12 @@ if ($result->num_rows == 0) {
 $answer = $result->fetch_assoc();
 $question_id = $answer['question_id'];
 
-// Delete the answer
+// First delete associated votes
+if (!$conn->query("DELETE FROM answer_votes WHERE answer_id = $answer_id")) {
+    die("Error deleting answer votes: " . $conn->error);
+}
+
+// Then delete the answer
 if ($conn->query("DELETE FROM answers WHERE id = $answer_id AND user_id = $user_id")) {
     header("Location: view_question.php?id=" . $question_id);
     exit;
